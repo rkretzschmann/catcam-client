@@ -26,23 +26,15 @@ const FullscreenButton = ({ containerRef, onClick }: FullscreenButtonProps) => {
   const handleFullscreen = () => {
     if (isFullscreen) {
       // Exit fullscreen
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen(); // Safari
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen(); // IE/Edge
-      }
+      document.exitFullscreen?.() ||
+        (document as any).webkitExitFullscreen?.() || // Safari
+        (document as any).msExitFullscreen?.(); // IE/Edge
     } else {
       // Enter fullscreen
       if (containerRef.current) {
-        if (containerRef.current.requestFullscreen) {
-          containerRef.current.requestFullscreen();
-        } else if (containerRef.current.webkitRequestFullscreen) {
-          containerRef.current.webkitRequestFullscreen(); // Safari
-        } else if (containerRef.current.msRequestFullscreen) {
-          containerRef.current.msRequestFullscreen(); // IE/Edge
-        }
+        containerRef.current.requestFullscreen?.() ||
+          (containerRef.current as any).webkitRequestFullscreen?.() || // Safari
+          (containerRef.current as any).msRequestFullscreen?.(); // IE/Edge
       }
     }
     setIsFullscreen(!isFullscreen); // Toggle the fullscreen state
