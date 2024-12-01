@@ -24,10 +24,13 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Compress build artifacts
+        run: zip -r dist.zip dist
+
       - name: Upload artifact to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: dist
+          artifacts: dist.zip # Path to the compressed artifact
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
           name: "Release ${{ github.ref_name }}"
