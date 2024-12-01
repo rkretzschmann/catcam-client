@@ -1,11 +1,9 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: Release catcam client
 
 on:
   push:
-    branches: [ "main" ]
+    tags: # Trigger only on version tags
+      - "v*.*.*"
 
 jobs:
   build:
@@ -18,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18 # Specify your Node.js version
+          node-version: 18
 
       - name: Install dependencies
         run: npm ci
@@ -29,10 +27,10 @@ jobs:
       - name: Upload artifact to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: dist # Path to the artifact directory
+          artifacts: dist
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref_name }} # Uses the tag that triggered the workflow
-          name: "Release ${{ github.ref_name }}" # Customize the release name
+          tag: ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}"
           body: "Build artifacts for ${{ github.ref_name }}."
-          draft: false # Set to true if you want a draft release
-          prerelease: false # Set to true if it's a pre-release
+          draft: false
+          prerelease: false
