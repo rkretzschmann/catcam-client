@@ -7,18 +7,29 @@ const Stream = () => {
   const [isContentLoaded, setIsContentLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
-  const [streamUrl, setStreamUrl] = useState(
-    "http://192.168.178.125:7123/stream.mjpg"
-  );
+
+  // Dynamically construct the default stream URL based on the app's IP/hostname and port
+  const getDefaultStreamUrl = () => {
+    const hostname = window.location.hostname; // Gets IP or hostname of the app
+    return `http://${hostname}:7123/stream.mjpg`;
+  };
+
+  // Function to get the stream URL from URL params or fallback to default
+  const getStreamUrlFromParams = () => {
+    const params = new URLSearchParams(window.location.search);
+    const paramUrl = params.get("streamUrl");
+    return paramUrl || getDefaultStreamUrl(); // Fallback to the default stream URL
+  };
+
+  const [streamUrl, setStreamUrl] = useState(getStreamUrlFromParams());
 
   useEffect(() => {
     if (hasError && retryCount < 5000) {
       const retryTimeout = setTimeout(() => {
         setRetryCount((prev) => prev + 1);
         setHasError(false); // Reset error state to retry loading
-        // Change the stream URL to trigger a reload
         setStreamUrl(
-          `http://192.168.178.125:7123/stream.mjpg?retry=${Date.now()}`
+          `${getStreamUrlFromParams()}?retry=${Date.now()}` // Append retry query
         );
       }, 3000);
       return () => clearTimeout(retryTimeout); // Clear timeout if component unmounts
